@@ -89,20 +89,40 @@
       .btn-elevated {
         border-radius: 0.75rem; /* rounded-xl */
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85),
-          0 1px 2px rgba(16, 24, 40, 0.06), 0 8px 24px rgba(16, 24, 40, 0.08);
+          0 1px 2px rgba(16, 24, 40, 0.06), 0 8px 24px rgba(16, 24, 40, 0.12);
         backdrop-filter: saturate(120%);
       }
       .btn-elevated:hover {
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9),
-          0 2px 4px rgba(16, 24, 40, 0.08), 0 10px 28px rgba(16, 24, 40, 0.12);
+          0 4px 8px rgba(16, 24, 40, 0.12), 0 14px 34px rgba(16, 24, 40, 0.16);
       }
       .btn-elevated:active {
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75),
-          0 1px 2px rgba(16, 24, 40, 0.06), 0 6px 20px rgba(16, 24, 40, 0.12);
+          0 1px 2px rgba(16, 24, 40, 0.08), 0 8px 22px rgba(16, 24, 40, 0.18);
+      }
+      .btn-elevated-strong {
+        border-radius: 0.9rem;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9),
+          0 6px 14px rgba(16, 24, 40, 0.16), 0 20px 44px rgba(16, 24, 40, 0.2);
       }
       .btn-elevated:focus-visible {
         outline: 2px solid rgba(0, 0, 0, 0.85);
         outline-offset: 1px;
+      }
+
+      /* Strong shadow for the whole panel over dimmed background */
+      .panel-elevated {
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.28),
+          0 2px 10px rgba(0, 0, 0, 0.15);
+      }
+
+      /* Larger button helper for the primary CTA */
+      .btn-lg {
+        padding-top: 0.875rem; /* ~py-3.5 */
+        padding-bottom: 0.875rem;
+        font-size: 1rem; /* text-base */
+        line-height: 1.5rem; /* leading-6 */
+        font-weight: 600; /* font-semibold */
       }
     </style>
   </head>
@@ -135,7 +155,7 @@
     ></div>
     <!-- Main container with mobile-like constraints, wider on desktop -->
     <div
-      class="w-full max-w-md md:max-w-lg bg-white p-5 flex flex-col rounded-lg shadow-lg relative z-10"
+      class="w-full max-w-md md:max-w-lg bg-white p-5 flex flex-col rounded-lg shadow-lg panel-elevated relative z-10"
     >
       <!-- Top navigation: Back, Title, and Save buttons -->
       <header class="flex justify-between items-center mb-6 w-full">
@@ -180,7 +200,7 @@
         <div class="mb-6 hidden md:block">
           <button
             id="openAddModalButton"
-            class="btn-primary btn-elevated w-full"
+            class="btn-primary btn-elevated btn-elevated-strong btn-lg w-full"
           >
             Add new
           </button>
@@ -210,10 +230,10 @@
               />
               <span class="sr-only">Correct a misspelling</span>
               <span
-                class="inline-block toggle-track h-5 w-9 rounded-full transition-colors bg-gray-300 hover:bg-gray-400 relative"
+                class="inline-block toggle-track rounded-full transition-colors bg-gray-300 relative"
               >
                 <span
-                  class="inline-block toggle-ball w-4 h-4 transform bg-white rounded-full shadow transition-transform absolute left-[2px] top-[2px]"
+                  class="inline-block toggle-ball transform bg-white rounded-full shadow transition-transform absolute left-[2px] top-[2px]"
                 ></span>
               </span>
             </button>
@@ -303,10 +323,10 @@
           />
           <span class="sr-only">Correct a misspelling</span>
           <span
-            class="inline-block toggle-track h-5 w-9 rounded-full transition-colors bg-gray-300 hover:bg-gray-400 relative"
+            class="inline-block toggle-track rounded-full transition-colors bg-gray-300 relative"
           >
             <span
-              class="inline-block toggle-ball w-4 h-4 transform bg-white rounded-full shadow transition-transform absolute left-[2px] top-[2px]"
+              class="inline-block toggle-ball transform bg-white rounded-full shadow transition-transform absolute left-[2px] top-[2px]"
             ></span>
           </span>
         </button>
@@ -572,13 +592,13 @@
 
             if (isChecked) {
               trackEl.classList.remove("bg-gray-300", "hover:bg-gray-400");
-              trackEl.classList.add("bg-[#0B4F75]", "hover:bg-[#0a4268]");
-              ballEl.style.transform = "translateX(1.5rem)";
+              trackEl.classList.add("bg-[#0B4F75]");
+              ballEl.style.transform = "translateX(1.25rem)";
               buttonEl.setAttribute("aria-checked", "true");
               elements.toggle.checked = true;
             } else {
-              trackEl.classList.remove("bg-[#0B4F75]", "hover:bg-[#0a4268]");
-              trackEl.classList.add("bg-gray-300", "hover:bg-gray-400");
+              trackEl.classList.remove("bg-[#0B4F75]");
+              trackEl.classList.add("bg-gray-300");
               ballEl.style.transform = "translateX(0)";
               buttonEl.setAttribute("aria-checked", "false");
               elements.toggle.checked = false;
