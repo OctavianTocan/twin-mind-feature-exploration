@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,10 +8,9 @@
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Set base font and base text color for dark mode */
+        /* Set base font */
         body {
             font-family: "Inter", sans-serif;
-            color: #646464; /* Lighter base text for dark mode */
         }
         /* Ensure html and body take full height for a mobile-like view */
         html, body {
@@ -19,7 +19,7 @@
             padding: 0;
         }
 
-        /* Custom styles for the dark blue color (for toggles) */
+        /* Custom styles for the dark blue color */
         .btn-primary {
             background-color: #0B4F75;
             color: white;
@@ -39,192 +39,194 @@
             cursor: not-allowed;
         }
 
-        /* Removed old toggle-switch CSS rules */
+        /* Custom styles for the toggle switch - updated for dark cards */
+        .toggle-switch-container {
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            margin: -0.5rem;
+        }
+        .toggle-switch-container:hover {
+            background-color: rgba(255, 255, 255, 0.08);
+        }
+        .toggle-track {
+            height: 1.5rem; /* h-6 equivalent */
+            width: 2.75rem; /* w-11 equivalent */
+        }
+        .toggle-ball {
+            height: 1.25rem; /* h-5 equivalent */
+            width: 1.25rem; /* w-5 equivalent */
+        }
+        /* legacy checkbox styles removed (not used) */
 
         /* Custom styles for the header button text color */
         .text-blue-primary {
-            /* Using a lighter blue for dark mode */
-            color: #0B4F75; 
-        }
-
-        /* Title font from previous file */
-        .font-helvetica {
-            font-family: "Helvetica Neue", Arial, sans-serif;
+            color: #0B4F75;
         }
     </style>
 </head>
-<body class="bg-gray-100 flex justify-center items-start min-h-screen py-8">
-    <!-- Main container with mobile-like constraints, wider on desktop -->
-    <div class="w-full max-w-md md:max-w-lg bg-gray-100 p-5 flex flex-col rounded-lg">
+<body class="bg-gray-100 text-black flex justify-center items-start min-h-screen py-8">
+    <!-- Main container with mobile-like constraints -->
+    <div class="w-full max-w-md bg-white p-5 flex flex-col rounded-lg shadow-lg">
         
-        <!-- Top navigation: Back, Title -->
+        <!-- Top navigation: Back, Title, and Save buttons -->
         <header class="flex justify-between items-center mb-6 w-full">
-            <button class="text-blue-primary text-base rounded-full px-2 py-1 flex items-center gap-1 hover:bg-gray-200">
+            <button class="text-blue-primary text-base rounded-full px-2 py-1 flex items-center gap-1 hover:bg-gray-100">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
                 </svg>
                 Back
             </button>
-            <h1 class="text-[1.75rem] font-bold text-[#4F4F4F] leading-[1.3] tracking-[0.096px] font-helvetica">Connectors</h1>
-            <!-- Removed Save Button -->
-            <div class="w-24"></div> <!-- Placeholder for balance -->
+            <h1 class="text-lg font-semibold">Connectors</h1>
+            <button class="text-blue-primary text-base rounded-full px-3 py-1 font-medium hover:bg-gray-100">Save</button>
         </header>
 
         <!-- Main content area -->
         <main class="flex-grow w-full">
             
-            <!-- Removed Active connectors heading and description -->
+            <!-- Explanatory Text -->
+            <p class="text-gray-600 text-sm mb-6">
+                Connect your accounts to search and analyze your data across different platforms.
+            </p>
 
             <!-- Connectors List -->
-            <div class="flex flex-col gap-2"> <!-- Gap between cards -->
+            <div class="flex flex-col w-full gap-3">
 
                 <!-- Connector Item: Google Drive -->
-                <div class="bg-white shadow-md p-4 rounded-lg">
-                    <!-- Top Row: Icon, Title, Toggle -->
-                    <div class="flex justify-between items-center mb-2">
-                        <div class="flex items-center gap-3">
-                            <svg class="w-8 h-8" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M32.001 32.015H16.001L8 45.349L16.001 32.015" fill="#FFC107"></path><path d="M16 12.682L24 26.015L32.001 12.682H16Z" fill="#3F51B5"></path><path d="M32.001 32.015L40 18.682H24L16.001 32.015H32.001Z" fill="#4CAF50"></path></svg>
-                            <span class="font-medium text-gray-900 text-sm">Google Drive</span>
+                <div class="connector-card w-full px-4 py-4 bg-gray-800 rounded-2xl hover:bg-gray-700 transition-colors cursor-pointer" role="button" tabindex="0" aria-label="Google Drive connector" data-connector="google-drive">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex items-start gap-3 min-w-0">
+                            <svg class="w-8 h-8 flex-shrink-0" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M32.001 32.015H16.001L8 45.349L16.001 32.015" fill="#FFC107"></path><path d="M16 12.682L24 26.015L32.001 12.682H16Z" fill="#3F51B5"></path><path d="M32.001 32.015L40 18.682H24L16.001 32.015H32.001Z" fill="#4CAF50"></path></svg>
+                            <div class="min-w-0">
+                                <div class="font-medium text-white text-sm">Google Drive</div>
+                                <p class="text-sm text-gray-300 mt-1 truncate">
+                                    Search files in your Google Drive.
+                                </p>
+                            </div>
                         </div>
-                        <div class="flex-shrink-0 ml-4">
-                            <button class="relative inline-flex items-center toggle-switch-button" role="switch" aria-checked="true">
+                        <div class="flex flex-col items-center gap-2 flex-shrink-0">
+                            <button class="relative inline-flex items-center toggle-switch-container" role="switch" aria-checked="true" data-connector="google-drive">
                                 <span class="sr-only">Toggle Google Drive</span>
-                                <!-- BIGGER TOGGLE -->
-                                <span class="inline-block toggle-track h-7 w-13 rounded-full transition-colors bg-[#0B4F75] hover:bg-[#0a4268]">
-                                    <span class="inline-block toggle-ball w-6 h-6 transform bg-white rounded-full shadow transition-transform absolute left-[2px] top-[2px]" style="transform: translateX(1.5rem);"></span>
+                                <span class="inline-block toggle-track rounded-full transition-colors bg-[#0B4F75] relative">
+                                    <span class="inline-block toggle-ball transform bg-white rounded-full shadow transition-transform absolute left-[2px] top-[2px]" style="transform: translateX(1.25rem);"></span>
                                 </span>
                             </button>
-                        </div>
-                    </div>
-                    <!-- Bottom Row: Description, Chevron -->
-                    <div class="flex justify-between items-center">
-                        <p class="text-sm text-gray-600 pr-4">
-                            Search files in your Google Drive.
-                        </p>
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                            </svg>
+                            <span class="chevron inline-flex text-gray-300" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Connector Item: Microsoft OneDrive -->
-                <div class="bg-white shadow-md p-4 rounded-lg">
-                    <!-- Top Row: Icon, Title, Toggle -->
-                    <div class="flex justify-between items-center mb-2">
-                        <div class="flex items-center gap-3">
-                            <svg class="w-8 h-8" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.223 11.25H29.74C34.22 11.25 38.381 14.73 39.112 19.14C41.347 19.66 43 21.6 43 23.95C43 26.46 40.975 28.5 38.48 28.5H16.224C10.871 28.5 6.5 24.11 6.5 18.73C6.5 13.79 10.375 9.7 15.19 9.28C15.522 9.26 15.855 9.25 16.19 9.25C16.818 9.25 17.433 9.3 18.019 9.38C17.382 10.15 16.892 10.66 16.223 11.25Z" fill="#03A9F4"></path><path d="M16.223 21.75H29.74C34.22 21.75 38.381 25.23 39.112 29.64C41.347 30.16 43 32.1 43 34.45C43 36.96 40.975 39 38.48 39H16.224C10.871 39 6.5 34.61 6.5 29.23C6.5 24.29 10.375 20.2 15.19 19.78C15.522 19.76 15.855 19.75 16.19 19.75C16.818 19.75 17.433 19.8 18.019 19.88C17.382 20.65 16.892 21.16 16.223 21.75Z" fill="#03A9F4" fill-opacity="0.6"></path></svg>
-                            <span class="font-medium text-gray-900 text-sm">Microsoft OneDrive</span>
+                <div class="connector-card w-full px-4 py-4 bg-gray-800 rounded-2xl hover:bg-gray-700 transition-colors cursor-pointer" role="button" tabindex="0" aria-label="Microsoft OneDrive connector" data-connector="onedrive">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex items-start gap-3 min-w-0">
+                            <svg class="w-8 h-8 flex-shrink-0" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16.223 11.25H29.74C34.22 11.25 38.381 14.73 39.112 19.14C41.347 19.66 43 21.6 43 23.95C43 26.46 40.975 28.5 38.48 28.5H16.224C10.871 28.5 6.5 24.11 6.5 18.73C6.5 13.79 10.375 9.7 15.19 9.28C15.522 9.26 15.855 9.25 16.19 9.25C16.818 9.25 17.433 9.3 18.019 9.38C17.382 10.15 16.892 10.66 16.223 11.25Z" fill="#03A9F4"></path><path d="M16.223 21.75H29.74C34.22 21.75 38.381 25.23 39.112 29.64C41.347 30.16 43 32.1 43 34.45C43 36.96 40.975 39 38.48 39H16.224C10.871 39 6.5 34.61 6.5 29.23C6.5 24.29 10.375 20.2 15.19 19.78C15.522 19.76 15.855 19.75 16.19 19.75C16.818 19.75 17.433 19.8 18.019 19.88C17.382 20.65 16.892 21.16 16.223 21.75Z" fill="#03A9F4" fill-opacity="0.6"></path></svg>
+                            <div class="min-w-0">
+                                <div class="font-medium text-white text-sm">Microsoft OneDrive</div>
+                                <p class="text-sm text-gray-300 mt-1 truncate">
+                                    Search, read, and analyze files in your OneDrive.
+                                </p>
+                            </div>
                         </div>
-                        <div class="flex-shrink-0 ml-4">
-                            <button class="relative inline-flex items-center toggle-switch-button" role="switch" aria-checked="false">
+                        <div class="flex flex-col items-center gap-2 flex-shrink-0">
+                            <button class="relative inline-flex items-center toggle-switch-container" role="switch" aria-checked="false" data-connector="onedrive">
                                 <span class="sr-only">Toggle Microsoft OneDrive</span>
-                                <span class="inline-block toggle-track h-7 w-13 rounded-full transition-colors bg-gray-300 hover:bg-gray-400">
-                                    <span class="inline-block toggle-ball w-6 h-6 transform bg-white rounded-full shadow transition-transform absolute left-[2px] top-[2px]"></span>
+                                <span class="inline-block toggle-track rounded-full transition-colors bg-gray-300 relative">
+                                    <span class="inline-block toggle-ball transform bg-white rounded-full shadow transition-transform absolute left-[2px] top-[2px]"></span>
                                 </span>
                             </button>
-                        </div>
-                    </div>
-                    <!-- Bottom Row: Description, Chevron -->
-                    <div class="flex justify-between items-center">
-                        <p class="text-sm text-gray-600 pr-4">
-                            Search, read, and analyze files in your OneDrive.
-                        </p>
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                            </svg>
+                            <span class="chevron inline-flex text-gray-300" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Connector Item: Microsoft Outlook -->
-                <div class="bg-white shadow-md p-4 rounded-lg">
-                    <!-- Top Row: Icon, Title, Toggle -->
-                    <div class="flex justify-between items-center mb-2">
-                        <div class="flex items-center gap-3">
-                            <svg class="w-8 h-8" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.5 7H33.5C36.8137 7 39.5 9.68629 39.5 13V35C39.5 38.3137 36.8137 41 33.5 41H8.5V7Z" fill="#0078D4"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M16 16H23C24.1046 16 25 16.8954 25 18V21C25 22.1046 24.1046 23 23 23H16V16Z" fill="white"></path><path d="M16 25H23V32H16V25Z" fill="white" fill-opacity="0.6"></path></svg>
-                            <span class="font-medium text-gray-900 text-sm">Microsoft Outlook</span>
+                <div class="connector-card w-full px-4 py-4 bg-gray-800 rounded-2xl hover:bg-gray-700 transition-colors cursor-pointer" role="button" tabindex="0" aria-label="Microsoft Outlook connector" data-connector="outlook">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex items-start gap-3 min-w-0">
+                            <svg class="w-8 h-8 flex-shrink-0" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.5 7H33.5C36.8137 7 39.5 9.68629 39.5 13V35C39.5 38.3137 36.8137 41 33.5 41H8.5V7Z" fill="#0078D4"></path><path fill-rule="evenodd" clip-rule="evenodd" d="M16 16H23C24.1046 16 25 16.8954 25 18V21C25 22.1046 24.1046 23 23 23H16V16Z" fill="white"></path><path d="M16 25H23V32H16V25Z" fill="white" fill-opacity="0.6"></path></svg>
+                            <div class="min-w-0">
+                                <div class="font-medium text-white text-sm">Microsoft Outlook</div>
+                                <p class="text-sm text-gray-300 mt-1 truncate">
+                                    Search, read, and analyze messages and invites in your Outlook inbox and calendar.
+                                </p>
+                            </div>
                         </div>
-                        <div class="flex-shrink-0 ml-4">
-                            <button class="relative inline-flex items-center toggle-switch-button" role="switch" aria-checked="false">
+                        <div class="flex flex-col items-center gap-2 flex-shrink-0">
+                            <button class="relative inline-flex items-center toggle-switch-container" role="switch" aria-checked="false" data-connector="outlook">
                                 <span class="sr-only">Toggle Microsoft Outlook</span>
-                                <span class="inline-block toggle-track h-7 w-13 rounded-full transition-colors bg-gray-300 hover:bg-gray-400">
-                                    <span class="inline-block toggle-ball w-6 h-6 transform bg-white rounded-full shadow transition-transform absolute left-[2px] top-[2px]"></span>
+                                <span class="inline-block toggle-track rounded-full transition-colors bg-gray-300 relative">
+                                    <span class="inline-block toggle-ball transform bg-white rounded-full shadow transition-transform absolute left-[2px] top-[2px]"></span>
                                 </span>
                             </button>
-                        </div>
-                    </div>
-                    <!-- Bottom Row: Description, Chevron -->
-                    <div class="flex justify-between items-center">
-                        <p class="text-sm text-gray-600 pr-4">
-                            Search, read, and analyze messages and invites in your Outlook inbox and calendar.
-                        </p>
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                            </svg>
+                            <span class="chevron inline-flex text-gray-300" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Connector Item: Gmail -->
-                <div class="bg-white shadow-md p-4 rounded-lg">
-                    <!-- Top Row: Icon, Title, Toggle -->
-                    <div class="flex justify-between items-center mb-2">
-                        <div class="flex items-center gap-3">
-                            <svg class="w-8 h-8" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 36.68V11.32C7 10.04 7.91 9 9.06 9H38.94C40.09 9 41 10.04 41 11.32V36.68C41 37.96 40.09 39 38.94 39H9.06C7.91 39 7 37.96 7 36.68Z" fill="#E0E0E0"></path><path d="M38.94 9C40.09 9 41 10.04 41 11.32V12.19L24 26.63L7 12.19V11.32C7 10.04 7.91 9 9.06 9H38.94Z" fill="#F44336"></path><path d="M24 29.5L7 15.06V36.68C7 37.96 7.91 39 9.06 39H15.4L24 29.5Z" fill="#D32F2F"></path><path d="M24 29.5L41 15.06V36.68C41 37.96 40.09 39 38.94 39H32.6L24 29.5Z" fill="#C62828"></path></svg>
-                            <span class="font-medium text-gray-900 text-sm">Gmail</span>
+                <div class="connector-card w-full px-4 py-4 bg-gray-800 rounded-2xl hover:bg-gray-700 transition-colors cursor-pointer" role="button" tabindex="0" aria-label="Gmail connector" data-connector="gmail">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex items-start gap-3 min-w-0">
+                            <svg class="w-8 h-8 flex-shrink-0" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 36.68V11.32C7 10.04 7.91 9 9.06 9H38.94C40.09 9 41 10.04 41 11.32V36.68C41 37.96 40.09 39 38.94 39H9.06C7.91 39 7 37.96 7 36.68Z" fill="#E0E0E0"></path><path d="M38.94 9C40.09 9 41 10.04 41 11.32V12.19L24 26.63L7 12.19V11.32C7 10.04 7.91 9 9.06 9H38.94Z" fill="#F44336"></path><path d="M24 29.5L7 15.06V36.68C7 37.96 7.91 39 9.06 39H15.4L24 29.5Z" fill="#D32F2F"></path><path d="M24 29.5L41 15.06V36.68C41 37.96 40.09 39 38.94 39H32.6L24 29.5Z" fill="#C62828"></path></svg>
+                            <div class="min-w-0">
+                                <div class="font-medium text-white text-sm">Gmail</div>
+                                <p class="text-sm text-gray-300 mt-1 truncate">
+                                    Search, read, and analyze messages in your Gmail inbox.
+                                </p>
+                            </div>
                         </div>
-                        <div class="flex-shrink-0 ml-4">
-                            <button class="relative inline-flex items-center toggle-switch-button" role="switch" aria-checked="true">
+                        <div class="flex flex-col items-center gap-2 flex-shrink-0">
+                            <button class="relative inline-flex items-center toggle-switch-container" role="switch" aria-checked="true" data-connector="gmail">
                                 <span class="sr-only">Toggle Gmail</span>
-                                <span class="inline-block toggle-track h-7 w-13 rounded-full transition-colors bg-[#0B4F75] hover:bg-[#0a4268]">
-                                    <span class="inline-block toggle-ball w-6 h-6 transform bg-white rounded-full shadow transition-transform absolute left-[2px] top-[2px]" style="transform: translateX(1.5rem);"></span>
+                                <span class="inline-block toggle-track rounded-full transition-colors bg-[#0B4F75] relative">
+                                    <span class="inline-block toggle-ball transform bg-white rounded-full shadow transition-transform absolute left-[2px] top-[2px]" style="transform: translateX(1.25rem);"></span>
                                 </span>
                             </button>
-                        </div>
-                    </div>
-                    <!-- Bottom Row: Description, Chevron -->
-                    <div class="flex justify-between items-center">
-                        <p class="text-sm text-gray-600 pr-4">
-                            Search, read, and analyze messages in your Gmail inbox.
-                        </p>
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                            </svg>
+                            <span class="chevron inline-flex text-gray-300" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
                         </div>
                     </div>
                 </div>
 
                 <!-- Connector Item: Google Calendar -->
-                <div class="bg-white shadow-md p-4 rounded-lg">
-                    <!-- Top Row: Icon, Title, Toggle -->
-                    <div class="flex justify-between items-center mb-2">
-                        <div class="flex items-center gap-3">
-                            <svg class="w-8 h-8" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M38 12H34V7H30V12H18V7H14V12H10C8.9 12 8 12.9 8 14V40C8 41.1 8.9 42 10 42H38C39.1 42 40 41.1 40 40V14C40 12.9 39.1 12 38 12Z" fill="#4285F4"></path><path d="M38 12H10C8.9 12 8 12.9 8 14V20H40V14C40 12.9 39.1 12 38 12Z" fill="#8AB4F8"></path><rect x="28" y="26" width="6" height="6" rx="1" fill="white"></rect><rect x="14" y="26" width="6" height="6" rx="1" fill="white"></rect></svg>
-                            <span class="font-medium text-gray-900 text-sm">Google Calendar</span>
+                <div class="connector-card w-full px-4 py-4 bg-gray-800 rounded-2xl hover:bg-gray-700 transition-colors cursor-pointer" role="button" tabindex="0" aria-label="Google Calendar connector" data-connector="google-calendar">
+                    <div class="flex items-start justify-between gap-4">
+                        <div class="flex items-start gap-3 min-w-0">
+                            <svg class="w-8 h-8 flex-shrink-0" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M38 12H34V7H30V12H18V7H14V12H10C8.9 12 8 12.9 8 14V40C8 41.1 8.9 42 10 42H38C39.1 42 40 41.1 40 40V14C40 12.9 39.1 12 38 12Z" fill="#4285F4"></path><path d="M38 12H10C8.9 12 8 12.9 8 14V20H40V14C40 12.9 39.1 12 38 12Z" fill="#8AB4F8"></path><rect x="28" y="26" width="6" height="6" rx="1" fill="white"></rect><rect x="14" y="26" width="6" height="6" rx="1" fill="white"></rect></svg>
+                            <div class="min-w-0">
+                                <div class="font-medium text-white text-sm">Google Calendar</div>
+                                <p class="text-sm text-gray-300 mt-1 truncate">
+                                    Search and read events in your Google Calendar.
+                                </p>
+                            </div>
                         </div>
-                        <div class="flex-shrink-0 ml-4">
-                            <button class="relative inline-flex items-center toggle-switch-button" role="switch" aria-checked="true">
+                        <div class="flex flex-col items-center gap-2 flex-shrink-0">
+                            <button class="relative inline-flex items-center toggle-switch-container" role="switch" aria-checked="true" data-connector="google-calendar">
                                 <span class="sr-only">Toggle Google Calendar</span>
-                                <span class="inline-block toggle-track h-7 w-13 rounded-full transition-colors bg-[#0B4F75] hover:bg-[#0a4268]">
-                                    <span class="inline-block toggle-ball w-6 h-6 transform bg-white rounded-full shadow transition-transform absolute left-[2px] top-[2px]" style="transform: translateX(1.5rem);"></span>
+                                <span class="inline-block toggle-track rounded-full transition-colors bg-[#0B4F75] relative">
+                                    <span class="inline-block toggle-ball transform bg-white rounded-full shadow transition-transform absolute left-[2px] top-[2px]" style="transform: translateX(1.25rem);"></span>
                                 </span>
                             </button>
-                        </div>
-                    </div>
-                    <!-- Bottom Row: Description, Chevron -->
-                    <div class="flex justify-between items-center">
-                        <p class="text-sm text-gray-600 pr-4">
-                            Search and read events in your Google Calendar.
-                        </p>
-                        <div class="flex-shrink-0">
-                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
-                            </svg>
+                            <span class="chevron inline-flex text-gray-300" aria-hidden="true">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 111.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                                </svg>
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -236,45 +238,58 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            
-            // --- FUNCTION to update toggle visuals ---
             const updateToggleVisuals = (buttonEl, isChecked) => {
                 const trackEl = buttonEl.querySelector('.toggle-track');
                 const ballEl = buttonEl.querySelector('.toggle-ball');
 
                 if (isChecked) {
-                    trackEl.classList.remove('bg-gray-300', 'hover:bg-gray-400');
-                    trackEl.classList.add('bg-[#0B4F75]', 'hover:bg-[#0a4268]');
-                    ballEl.style.transform = 'translateX(1.5rem)'; // 24px
+                    trackEl.classList.remove('bg-gray-300');
+                    trackEl.classList.add('bg-[#0B4F75]');
+                    ballEl.style.transform = 'translateX(1.25rem)';
                     buttonEl.setAttribute('aria-checked', 'true');
                 } else {
-                    trackEl.classList.remove('bg-[#0B4F75]', 'hover:bg-[#0a4268]');
-                    trackEl.classList.add('bg-gray-300', 'hover:bg-gray-400');
+                    trackEl.classList.remove('bg-[#0B4F75]');
+                    trackEl.classList.add('bg-gray-300');
                     ballEl.style.transform = 'translateX(0)';
                     buttonEl.setAttribute('aria-checked', 'false');
                 }
             };
 
-            // --- EVENT LISTENERS for all toggles ---
-            const toggleButtons = document.querySelectorAll('.toggle-switch-button');
+            const toggleButtons = document.querySelectorAll('.toggle-switch-container');
             toggleButtons.forEach(button => {
-                // Set initial state for grayed-out toggles
-                const isInitiallyChecked = button.getAttribute('aria-checked') === 'true';
-                if (!isInitiallyChecked) {
-                    updateToggleVisuals(button, false);
-                }
-
-                // Add click listener
                 button.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent card click
+                    e.stopPropagation();
                     const isCurrentlyChecked = button.getAttribute('aria-checked') === 'true';
                     updateToggleVisuals(button, !isCurrentlyChecked);
                 });
+                button.addEventListener('keydown', (e) => {
+                    if (e.key === ' ' || e.key === 'Enter') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const isCurrentlyChecked = button.getAttribute('aria-checked') === 'true';
+                        updateToggleVisuals(button, !isCurrentlyChecked);
+                    }
+                });
             });
 
+            // Card click handler: navigate/open details (placeholder)
+            const cards = document.querySelectorAll('.connector-card');
+            const onCardActivate = (card) => {
+                const connector = card.getAttribute('data-connector') || 'unknown';
+                // Placeholder behavior; in a real app, navigate to connector details
+                console.log('Open connector details for', connector);
+            };
+            cards.forEach(card => {
+                card.addEventListener('click', () => onCardActivate(card));
+                card.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onCardActivate(card);
+                    }
+                });
+            });
         });
     </script>
 </body>
 </html>
-
 
