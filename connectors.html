@@ -10,6 +10,7 @@
       /* Set base font */
       body {
         font-family: "Inter", sans-serif;
+        color: #646464; /* Align text color with dictionary */
       }
       /* Ensure html and body take full height for a mobile-like view */
       html,
@@ -45,9 +46,6 @@
         border-radius: 0.5rem;
         margin: -0.5rem;
       }
-      .toggle-switch-container:hover {
-        background-color: #f3f4f6;
-      }
       .toggle-track {
         height: 1.5rem; /* h-6 equivalent */
         width: 2.75rem; /* w-11 equivalent */
@@ -62,14 +60,52 @@
       .text-blue-primary {
         color: #0b4f75;
       }
+
+      /* Added for new title font parity */
+      .font-helvetica {
+        font-family: "Helvetica Neue", Arial, sans-serif;
+      }
+
+      /* Elevated/glassy surface style for buttons/cards */
+      .btn-elevated {
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 0.75rem; /* rounded-xl */
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85),
+          0 1px 2px rgba(16, 24, 40, 0.06), 0 8px 24px rgba(16, 24, 40, 0.08);
+        backdrop-filter: saturate(120%);
+      }
+      .btn-elevated:hover {
+        background: rgba(255, 255, 255, 0.9);
+      }
+      .btn-elevated:active {
+        background: rgba(255, 255, 255, 0.6);
+      }
+      .btn-elevated:focus-visible {
+        outline: 2px solid rgba(0, 0, 0, 0.85);
+        outline-offset: 1px;
+      }
     </style>
   </head>
-  <body
-    class="bg-gray-100 text-black flex justify-center items-start min-h-screen py-8"
-  >
+  <body class="bg-gray-100 flex justify-center items-start min-h-screen py-8">
+    <!-- Background TwinMind iframe (non-interactive) -->
+    <iframe
+      src="https://app.twinmind.com/m/d753c9b5-c8a7-41a3-aab5-dc3be9d39a2e"
+      title="TwinMind App Preview"
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"
+      style="
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        z-index: 0;
+        pointer-events: none;
+      "
+    ></iframe>
     <!-- Main container with mobile-like constraints -->
     <div
-      class="w-full max-w-md bg-white p-5 flex flex-col rounded-lg shadow-lg"
+      class="w-full max-w-md md:max-w-lg bg-white p-5 flex flex-col rounded-lg shadow-lg relative z-10"
     >
       <!-- Top navigation: Back, Title, and Save buttons -->
       <header class="flex justify-between items-center mb-6 w-full">
@@ -90,7 +126,11 @@
           </svg>
           Back
         </button>
-        <h1 class="text-lg font-semibold">Connectors</h1>
+        <h1
+          class="text-[1.75rem] font-bold text-[#4F4F4F] leading-[1.3] tracking-[0.096px] font-helvetica"
+        >
+          Connectors
+        </h1>
         <button
           class="text-blue-primary text-base rounded-full px-3 py-1 font-medium hover:bg-gray-100"
         >
@@ -101,7 +141,7 @@
       <!-- Main content area -->
       <main class="flex-grow w-full">
         <!-- Explanatory Text -->
-        <p class="text-gray-600 text-sm mb-6">
+        <p class="text-sm mb-6">
           Connect your accounts to search and analyze your data across different
           platforms.
         </p>
@@ -110,28 +150,30 @@
         <div class="flex flex-col w-full gap-3">
           <!-- Connector Item: Google Drive -->
           <div
-            class="connector-card w-full px-4 py-4 bg-white border border-gray-200 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer"
+            class="connector-card btn-elevated w-full px-4 py-4 bg-white border border-gray-200 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer"
             role="button"
             tabindex="0"
             aria-label="Google Drive connector"
             data-connector="google-drive"
           >
             <div class="flex items-start justify-between gap-4">
-              <div class="flex items-start gap-3 min-w-0">
+              <div
+                class="grid grid-cols-[auto,1fr] grid-rows-[auto,auto] gap-x-3 min-w-0 items-start"
+              >
                 <img
                   src="icons/google-drive.png"
                   alt="Google Drive"
-                  class="w-8 h-8 flex-shrink-0 object-contain"
+                  class="w-6 h-6 object-contain col-start-1 row-span-2 self-start"
                   loading="lazy"
                 />
-                <div class="min-w-0">
+                <div class="min-w-0 col-start-2 row-start-1">
                   <div class="font-medium text-gray-900 text-sm">
                     Google Drive
                   </div>
-                  <p class="text-sm text-gray-600 mt-1 truncate">
-                    Search files in your Google Drive.
-                  </p>
                 </div>
+                <p class="text-sm mt-1 col-span-2 row-start-2">
+                  Search files in your Google Drive.
+                </p>
               </div>
               <div class="flex flex-col items-center gap-2 flex-shrink-0">
                 <button
@@ -146,7 +188,7 @@
                   >
                     <span
                       class="inline-block toggle-ball transform bg-white rounded-full shadow transition-transform absolute left-[2px] top-[2px]"
-                      style="transform: translateX(1.25rem)"
+                      style="transform: translateX(1.5rem)"
                     ></span>
                   </span>
                 </button>
@@ -173,28 +215,30 @@
 
           <!-- Connector Item: Microsoft OneDrive -->
           <div
-            class="connector-card w-full px-4 py-4 bg-white border border-gray-200 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer"
+            class="connector-card btn-elevated w-full px-4 py-4 bg-white border border-gray-200 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer"
             role="button"
             tabindex="0"
             aria-label="Microsoft OneDrive connector"
             data-connector="onedrive"
           >
             <div class="flex items-start justify-between gap-4">
-              <div class="flex items-start gap-3 min-w-0">
+              <div
+                class="grid grid-cols-[auto,1fr] grid-rows-[auto,auto] gap-x-3 min-w-0 items-start"
+              >
                 <img
                   src="icons/onedrive.png"
                   alt="Microsoft OneDrive"
-                  class="w-8 h-8 flex-shrink-0 object-contain"
+                  class="w-6 h-6 object-contain col-start-1 row-span-2 self-start"
                   loading="lazy"
                 />
-                <div class="min-w-0">
+                <div class="min-w-0 col-start-2 row-start-1">
                   <div class="font-medium text-gray-900 text-sm">
                     Microsoft OneDrive
                   </div>
-                  <p class="text-sm text-gray-600 mt-1 truncate">
-                    Search, read, and analyze files in your OneDrive.
-                  </p>
                 </div>
+                <p class="text-sm mt-1 col-span-2 row-start-2">
+                  Search, read, and analyze files in your OneDrive.
+                </p>
               </div>
               <div class="flex flex-col items-center gap-2 flex-shrink-0">
                 <button
@@ -235,29 +279,31 @@
 
           <!-- Connector Item: Microsoft Outlook -->
           <div
-            class="connector-card w-full px-4 py-4 bg-white border border-gray-200 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer"
+            class="connector-card btn-elevated w-full px-4 py-4 bg-white border border-gray-200 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer"
             role="button"
             tabindex="0"
             aria-label="Microsoft Outlook connector"
             data-connector="outlook"
           >
             <div class="flex items-start justify-between gap-4">
-              <div class="flex items-start gap-3 min-w-0">
+              <div
+                class="grid grid-cols-[auto,1fr] grid-rows-[auto,auto] gap-x-3 min-w-0 items-start"
+              >
                 <img
                   src="icons/outlook.png"
                   alt="Microsoft Outlook"
-                  class="w-8 h-8 flex-shrink-0 object-contain"
+                  class="w-6 h-6 object-contain col-start-1 row-span-2 self-start"
                   loading="lazy"
                 />
-                <div class="min-w-0">
+                <div class="min-w-0 col-start-2 row-start-1">
                   <div class="font-medium text-gray-900 text-sm">
                     Microsoft Outlook
                   </div>
-                  <p class="text-sm text-gray-600 mt-1 truncate">
-                    Search, read, and analyze messages and invites in your
-                    Outlook inbox and calendar.
-                  </p>
                 </div>
+                <p class="text-sm mt-1 col-span-2 row-start-2">
+                  Search, read, and analyze messages and invites in your Outlook
+                  inbox and calendar.
+                </p>
               </div>
               <div class="flex flex-col items-center gap-2 flex-shrink-0">
                 <button
@@ -298,26 +344,28 @@
 
           <!-- Connector Item: Gmail -->
           <div
-            class="connector-card w-full px-4 py-4 bg-white border border-gray-200 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer"
+            class="connector-card btn-elevated w-full px-4 py-4 bg-white border border-gray-200 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer"
             role="button"
             tabindex="0"
             aria-label="Gmail connector"
             data-connector="gmail"
           >
             <div class="flex items-start justify-between gap-4">
-              <div class="flex items-start gap-3 min-w-0">
+              <div
+                class="grid grid-cols-[auto,1fr] grid-rows-[auto,auto] gap-x-3 min-w-0 items-start"
+              >
                 <img
                   src="icons/gmail.png"
                   alt="Gmail"
-                  class="w-8 h-8 flex-shrink-0 object-contain"
+                  class="w-6 h-6 object-contain col-start-1 row-span-2 self-start"
                   loading="lazy"
                 />
-                <div class="min-w-0">
+                <div class="min-w-0 col-start-2 row-start-1">
                   <div class="font-medium text-gray-900 text-sm">Gmail</div>
-                  <p class="text-sm text-gray-600 mt-1 truncate">
-                    Search, read, and analyze messages in your Gmail inbox.
-                  </p>
                 </div>
+                <p class="text-sm mt-1 col-span-2 row-start-2">
+                  Search, read, and analyze messages in your Gmail inbox.
+                </p>
               </div>
               <div class="flex flex-col items-center gap-2 flex-shrink-0">
                 <button
@@ -332,7 +380,7 @@
                   >
                     <span
                       class="inline-block toggle-ball transform bg-white rounded-full shadow transition-transform absolute left-[2px] top-[2px]"
-                      style="transform: translateX(1.25rem)"
+                      style="transform: translateX(1.5rem)"
                     ></span>
                   </span>
                 </button>
@@ -359,28 +407,30 @@
 
           <!-- Connector Item: Google Calendar -->
           <div
-            class="connector-card w-full px-4 py-4 bg-white border border-gray-200 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer"
+            class="connector-card btn-elevated w-full px-4 py-4 bg-white border border-gray-200 rounded-2xl hover:bg-gray-50 transition-colors cursor-pointer"
             role="button"
             tabindex="0"
             aria-label="Google Calendar connector"
             data-connector="google-calendar"
           >
             <div class="flex items-start justify-between gap-4">
-              <div class="flex items-start gap-3 min-w-0">
+              <div
+                class="grid grid-cols-[auto,1fr] grid-rows-[auto,auto] gap-x-3 min-w-0 items-start"
+              >
                 <img
                   src="icons/google-calendar.png"
                   alt="Google Calendar"
-                  class="w-8 h-8 flex-shrink-0 object-contain"
+                  class="w-6 h-6 object-contain col-start-1 row-span-2 self-start"
                   loading="lazy"
                 />
-                <div class="min-w-0">
+                <div class="min-w-0 col-start-2 row-start-1">
                   <div class="font-medium text-gray-900 text-sm">
                     Google Calendar
                   </div>
-                  <p class="text-sm text-gray-600 mt-1 truncate">
-                    Search and read events in your Google Calendar.
-                  </p>
                 </div>
+                <p class="text-sm mt-1 col-span-2 row-start-2">
+                  Search and read events in your Google Calendar.
+                </p>
               </div>
               <div class="flex flex-col items-center gap-2 flex-shrink-0">
                 <button
@@ -395,7 +445,7 @@
                   >
                     <span
                       class="inline-block toggle-ball transform bg-white rounded-full shadow transition-transform absolute left-[2px] top-[2px]"
-                      style="transform: translateX(1.25rem)"
+                      style="transform: translateX(1.5rem)"
                     ></span>
                   </span>
                 </button>
@@ -432,7 +482,7 @@
           if (isChecked) {
             trackEl.classList.remove("bg-gray-300");
             trackEl.classList.add("bg-[#0B4F75]");
-            ballEl.style.transform = "translateX(1.25rem)";
+            ballEl.style.transform = "translateX(1.5rem)";
             buttonEl.setAttribute("aria-checked", "true");
           } else {
             trackEl.classList.remove("bg-[#0B4F75]");
