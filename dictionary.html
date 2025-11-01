@@ -116,13 +116,25 @@
           0 2px 10px rgba(0, 0, 0, 0.15);
       }
 
+      /* Copilot-like surface for buttons: translucent white bg with subtle border */
+      .btn-surface {
+        background-color: rgba(255, 255, 255, 0.3) !important;
+        border: 0.8px solid rgba(0, 0, 0, 0.08);
+        border-radius: 12px;
+        backdrop-filter: blur(10px);
+      }
+      .btn-surface:hover {
+        background-color: rgba(255, 255, 255, 0.4) !important;
+        border-color: rgba(0, 0, 0, 0.12);
+      }
+
       /* Larger button helper for the primary CTA */
       .btn-lg {
         padding-top: 0.875rem; /* ~py-3.5 */
         padding-bottom: 0.875rem;
         font-size: 1rem; /* text-base */
         line-height: 1.5rem; /* leading-6 */
-        font-weight: 600; /* font-semibold */
+        /* no bold weight for larger CTA */
       }
     </style>
   </head>
@@ -200,7 +212,8 @@
         <div class="mb-6 hidden md:block">
           <button
             id="openAddModalButton"
-            class="btn-primary btn-elevated btn-elevated-strong btn-lg w-full"
+            class="btn-lg w-full font-normal"
+            style="background-color: #0b4f75; color: white; border: 0.8px solid rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 0.875rem 1.5rem; font-size: 1rem; line-height: 1.5rem; backdrop-filter: blur(10px);"
           >
             Add new
           </button>
@@ -276,7 +289,7 @@
           </div>
 
           <!-- Add Button for Inline Form - Using custom class for styling -->
-          <button id="addFormSaveButton" class="btn-primary w-full mt-5">
+          <button id="addFormSaveButton" class="w-full mt-5" style="background-color: #0b4f75; color: white; border: 0.8px solid rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 0.5rem 1.5rem; font-size: 0.875rem; line-height: 1.25rem; backdrop-filter: blur(10px);">
             Add word
           </button>
         </div>
@@ -372,18 +385,20 @@
       <div class="flex justify-end items-center gap-3 mt-5">
         <button
           id="entryModalDeleteButton"
-          class="text-red-600 hover:bg-red-100 font-medium rounded-lg text-sm px-5 py-2.5 hidden mr-auto"
+          class="btn-surface font-medium text-sm px-5 py-2.5 hidden mr-auto"
+          style="color: rgb(220, 38, 38);"
         >
-          Cancel
+          Delete
         </button>
         <button
           id="entryModalCancelButton"
-          class="bg-gray-100 hover:bg-gray-200 font-medium rounded-lg text-sm px-5 py-2.5"
+          class="btn-surface font-medium text-sm px-5 py-2.5"
+          style="color: rgb(99, 92, 87);"
         >
           Cancel
         </button>
         <!-- Save Button - Using custom class for styling -->
-        <button id="entryModalSaveButton" class="btn-primary">
+        <button id="entryModalSaveButton" style="background-color: #0b4f75; color: white; border: 0.8px solid rgba(255, 255, 255, 0.2); border-radius: 12px; padding: 0.5rem 1.5rem; font-size: 0.875rem; line-height: 1.25rem; backdrop-filter: blur(10px);">
           Save changes
         </button>
       </div>
@@ -766,15 +781,35 @@
           const isChecked = !entryModalMisspellingToggle.checked;
           updateFormInputs(isChecked, "modal");
         });
+        entryModalToggleButton.addEventListener("keydown", (e) => {
+          if (e.key === " " || e.key === "Enter") {
+            e.preventDefault();
+            const isChecked = !entryModalMisspellingToggle.checked;
+            updateFormInputs(isChecked, "modal");
+          }
+        });
         entryModalSaveButton.addEventListener("click", handleModalSave);
         entryModalDeleteButton.addEventListener("click", handleDeleteInModal);
+        entryModalMisspellingToggle.addEventListener("change", (e) => {
+          updateFormInputs(e.target.checked, "modal");
+        });
 
         // Inline Add Form Listeners
         addFormToggleButton.addEventListener("click", () => {
           const isChecked = !addFormMisspellingToggle.checked;
           updateFormInputs(isChecked, "inline");
         });
+        addFormToggleButton.addEventListener("keydown", (e) => {
+          if (e.key === " " || e.key === "Enter") {
+            e.preventDefault();
+            const isChecked = !addFormMisspellingToggle.checked;
+            updateFormInputs(isChecked, "inline");
+          }
+        });
         addFormSaveButton.addEventListener("click", handleAddItem);
+        addFormMisspellingToggle.addEventListener("change", (e) => {
+          updateFormInputs(e.target.checked, "inline");
+        });
 
         // Desktop "Add new" Button Listener
         openAddModalButton.addEventListener("click", openAddModal);
