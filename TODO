@@ -1,0 +1,2 @@
+- Implement a button into the profile itself for TwinMind which toggles these pages.
+- Pressing the back button on these pages should return the user to the default page by simply hiding them.
