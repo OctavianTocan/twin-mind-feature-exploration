@@ -1,279 +1,475 @@
-// TwinMind Demo Extension - Content Script
-(function() {
-  'use strict';
+// TwinMind Overlay Injection Extension - Content Script
+(function () {
+  "use strict";
 
-  const DEMO_SERVER_URL = 'http://localhost:3000';
   const MAX_RETRIES = 50;
   const RETRY_DELAY = 500;
 
-  // TwinMind brand colors
-  const COLORS = {
-    primary: '#0b4f75',
-    primaryHover: '#0a4268',
-    text: '#4F4F4F',
-    gray: '#646464',
-    border: '#e5e7eb',
-    white: '#ffffff'
-  };
+  // --- Logging helpers ---
+  const log = (...args) => console.log("[TwinMind Ext]", ...args);
+  const warn = (...args) => console.warn("[TwinMind Ext]", ...args);
+  const err = (...args) => console.error("[TwinMind Ext]", ...args);
 
-  // Create demo button element
-  function createDemoButton(text, url, icon) {
-    const button = document.createElement('button');
-    button.className = 'twinmind-demo-btn';
-    button.innerHTML = `
-      <span class="demo-icon">${icon}</span>
-      <span class="demo-text">${text}</span>
-    `;
-    button.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      window.open(url, '_blank');
+  // --- Overlay helpers ---
+  let cleanupFns = [];
+
+  function removeOverlay() {
+    const overlay = document.querySelector(".twinmind-overlay");
+    if (!overlay) return;
+
+    // Run cleanups
+    cleanupFns.forEach((fn) => {
+      try {
+        fn();
+      } catch (e) {
+        // ignore
+      }
     });
-    return button;
-  }
+    cleanupFns = [];
 
-  // Create demo section
-  function createDemoSection() {
-    const section = document.createElement('div');
-    section.className = 'twinmind-demo-section';
-    section.innerHTML = `
-      <div class="demo-divider"></div>
-      <div class="demo-header">Feature Demos</div>
-    `;
-
-    // Add demo buttons
-    const connectorsBtn = createDemoButton(
-      'Connectors',
-      `${DEMO_SERVER_URL}/connectors.html`,
-      '🔗'
-    );
-    
-    const dictionaryBtn = createDemoButton(
-      'Dictionary',
-      `${DEMO_SERVER_URL}/dictionary.html`,
-      '📝'
-    );
-
-    section.appendChild(connectorsBtn);
-    section.appendChild(dictionaryBtn);
-
-    return section;
-  }
-
-  // Inject CSS
-  function injectStyles() {
-    const style = document.createElement('style');
-    style.textContent = `
-      .twinmind-demo-section {
-        border-top: 1px solid ${COLORS.border};
-        padding: 8px 0;
-        margin-top: 8px;
-      }
-      
-      .demo-header {
-        font-size: 12px;
-        font-weight: 600;
-        color: ${COLORS.gray};
-        padding: 4px 16px;
-        margin-bottom: 4px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-      
-      .demo-divider {
-        height: 1px;
-        background: ${COLORS.border};
-        margin-bottom: 8px;
-      }
-      
-      .twinmind-demo-btn {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 10px 16px;
-        background: ${COLORS.white};
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        text-align: left;
-        font-size: 14px;
-        color: ${COLORS.text};
-      }
-      
-      .twinmind-demo-btn:hover {
-        background: #f8fafc;
-        transform: translateX(2px);
-      }
-      
-      .twinmind-demo-btn:active {
-        transform: translateX(1px);
-      }
-      
-      .demo-icon {
-        font-size: 16px;
-        width: 20px;
-        text-align: center;
-      }
-      
-      .demo-text {
-        flex: 1;
-        font-weight: 500;
-      }
-      
-      .demo-server-status {
-        font-size: 11px;
-        color: ${COLORS.gray};
-        padding: 8px 16px;
-        text-align: center;
-        background: #fef3c7;
-        border-radius: 6px;
-        margin: 8px 0;
-      }
-      
-      .demo-server-status.online {
-        background: #d1fae5;
-        color: #065f46;
-      }
-    `;
-    document.head.appendChild(style);
-  }
-
-  // Check if local demo server is running
-  async function checkDemoServer() {
+    overlay.remove();
     try {
-      const response = await fetch(`${DEMO_SERVER_URL}/health`, {
-        method: "GET",
-        cache: "no-cache"
-      });
-      return response.ok;
-    } catch (error) {
-      return false;
+      document.body.style.overflow = "";
+    } catch (_) {}
+    log("Overlay removed");
+  }
+
+  async function showOverlay(htmlFileName) {
+    removeOverlay();
+
+    const url = chrome.runtime.getURL(htmlFileName);
+    log("Fetching overlay HTML:", url);
+
+    let htmlText = "";
+    try {
+      const res = await fetch(url, { cache: "no-cache" });
+      htmlText = await res.text();
+    } catch (e) {
+      err("Failed to fetch overlay HTML:", e);
+      return;
     }
+
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlText, "text/html");
+
+    // Extract styles and scripts from the fetched HTML
+    const styleTags = Array.from(doc.querySelectorAll("style"));
+    const scriptTags = Array.from(doc.querySelectorAll("script"));
+    const bodyEl = doc.body;
+
+    // Remove background iframe and dark overlay from the source HTML (our extension provides backdrop)
+    try {
+      doc
+        .querySelectorAll('iframe[src*="app.twinmind.com"]')
+        .forEach((el) => el.remove());
+      Array.from(doc.querySelectorAll("div")).forEach((el) => {
+        const s = (el.getAttribute("style") || "")
+          .replace(/\s+/g, " ")
+          .toLowerCase();
+        if (
+          s.includes("position: fixed") &&
+          s.includes("background: rgba(0, 0, 0, 0.35)")
+        ) {
+          el.remove();
+        }
+      });
+    } catch (_) {}
+
+    // Rewrite icon paths to extension URLs
+    const iconsBase = chrome.runtime.getURL("icons/");
+    let bodyHTML = bodyEl ? bodyEl.innerHTML : "";
+    // Replace relative icon paths to extension icon URLs
+    bodyHTML = bodyHTML.replace(
+      /(src)\s*=\s*(["'])icons\/(.+?)\2/gi,
+      (m, attr, q, rest) => `${attr}=${q}${iconsBase}${rest}${q}`
+    );
+
+    // Ensure Tailwind CDN is present
+    const hasTailwind = !!document.querySelector(
+      'script[src*="cdn.tailwindcss.com"]'
+    );
+    if (!hasTailwind) {
+      const tw = document.createElement("script");
+      tw.src = "https://cdn.tailwindcss.com";
+      tw.defer = true;
+      document.head.appendChild(tw);
+      log("Injected Tailwind CDN");
+    }
+
+    // Create overlay elements
+    const overlay = document.createElement("div");
+    overlay.className = "twinmind-overlay";
+    Object.assign(overlay.style, {
+      position: "fixed",
+      inset: "0",
+      zIndex: "10000",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    });
+
+    const backdrop = document.createElement("div");
+    backdrop.className = "twinmind-backdrop";
+    Object.assign(backdrop.style, {
+      position: "absolute",
+      inset: "0",
+      background: "rgba(0,0,0,0.5)",
+    });
+
+    const contentWrap = document.createElement("div");
+    contentWrap.className = "twinmind-overlay-content";
+    Object.assign(contentWrap.style, {
+      position: "relative",
+      zIndex: "10001",
+      width: "100%",
+      height: "100%",
+      overflow: "auto",
+      display: "flex",
+      alignItems: "flex-start",
+      justifyContent: "center",
+    });
+
+    // Add page styles from source HTML scoped inside overlay container
+    styleTags.forEach((s) => {
+      const styleEl = document.createElement("style");
+      styleEl.textContent = s.textContent || "";
+      contentWrap.appendChild(styleEl);
+    });
+
+    // Insert body markup
+    const inner = document.createElement("div");
+    inner.innerHTML = bodyHTML;
+    contentWrap.appendChild(inner);
+
+    overlay.appendChild(backdrop);
+    overlay.appendChild(contentWrap);
+    document.body.appendChild(overlay);
+    document.body.style.overflow = "hidden";
+
+    // Replace service icons with extension URLs; fallback to emoji if not packaged
+    const emojiMap = new Map([
+      ["google-drive", "📁"],
+      ["onedrive", "☁️"],
+      ["outlook", "📧"],
+      ["gmail", "✉️"],
+      ["google-calendar", "📅"],
+    ]);
+    const serviceImgs = overlay.querySelectorAll('img[src*="icons/"]');
+    serviceImgs.forEach((img) => {
+      const orig = img.getAttribute("src") || "";
+      const file = orig.split("/").pop() || "";
+      const key = file.replace(/\.png$/i, "").toLowerCase();
+      const runtimeIconUrl = chrome.runtime.getURL(`icons/${file}`);
+      img.src = runtimeIconUrl;
+      img.onerror = () => {
+        const span = document.createElement("span");
+        span.textContent = emojiMap.get(key) || "🔗";
+        span.setAttribute("role", "img");
+        span.setAttribute("aria-label", img.getAttribute("alt") || key);
+        span.style.fontSize = "1.25rem";
+        span.style.width = "1.5rem";
+        span.style.height = "1.5rem";
+        span.style.display = "inline-flex";
+        span.style.alignItems = "center";
+        span.style.justifyContent = "center";
+        img.replaceWith(span);
+      };
+    });
+
+    // Backdrop click closes overlay
+    const onBackdrop = () => removeOverlay();
+    backdrop.addEventListener("click", onBackdrop);
+    cleanupFns.push(() => backdrop.removeEventListener("click", onBackdrop));
+
+    // ESC to close
+    const onKey = (e) => {
+      if (e.key === "Escape") removeOverlay();
+    };
+    document.addEventListener("keydown", onKey, true);
+    cleanupFns.push(() => document.removeEventListener("keydown", onKey, true));
+
+    // Wire up Back/Save buttons inside overlay content
+    const buttonCandidates = Array.from(overlay.querySelectorAll("button"));
+    buttonCandidates.forEach((btn) => {
+      const txt = (btn.textContent || "").trim().toLowerCase();
+      if (txt === "back" || txt === "save") {
+        const onClick = (e) => {
+          e.preventDefault();
+          removeOverlay();
+        };
+        btn.addEventListener("click", onClick);
+        cleanupFns.push(() => btn.removeEventListener("click", onClick));
+      }
+    });
+
+    // Execute inline scripts from the source page so interactions work.
+    // If the script registers DOMContentLoaded, run its body immediately.
+    scriptTags.forEach((s) => {
+      const src = s.getAttribute("src");
+      if (src) {
+        const scriptEl = document.createElement("script");
+        scriptEl.src = src.startsWith("http")
+          ? src
+          : chrome.runtime.getURL(src.replace(/^\/?/, ""));
+        contentWrap.appendChild(scriptEl);
+        return;
+      }
+      const code = (s.textContent || "").trim();
+      if (!code) return;
+      let toRun = code;
+      // Try to unwrap DOMContentLoaded pattern
+      const dclMatch = code.match(
+        /document\.addEventListener\(\s*["']DOMContentLoaded["']\s*,\s*\(\)\s*=>\s*\{([\s\S]*)\}\s*\)\s*;?/
+      );
+      if (dclMatch && dclMatch[1]) {
+        toRun = `(function(){${dclMatch[1]}})();`;
+      }
+      const runner = document.createElement("script");
+      runner.textContent = toRun;
+      contentWrap.appendChild(runner);
+    });
+
+    log("Overlay shown for", htmlFileName);
   }
 
-  // Add server status indicator
-  function addServerStatus(container, isOnline) {
-    const status = document.createElement('div');
-    status.className = `demo-server-status ${isOnline ? 'online' : ''}`;
-    status.textContent = isOnline 
-      ? '✓ Demo server running' 
-      : '⚠ Start demo server: Open demo-server folder and run "npm start"';
-    
-    container.insertBefore(status, container.firstChild);
-    return status;
+  // --- Menu detection and injection ---
+  function describeEl(el) {
+    if (!el) return "null";
+    const cls = (el.className || "")
+      .toString()
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 5)
+      .join(".");
+    return `<${el.tagName.toLowerCase()}${cls ? "." + cls : ""}${
+      el.id ? "#" + el.id : ""
+    }>`;
   }
 
-  // Find and inject into profile menu
-  function findAndInjectMenu() {
-    // Common selectors for profile menus
-    const selectors = [
-      '[data-testid="profile-menu"]',
-      '[role="menu"]',
-      '.profile-menu',
-      '.user-menu',
-      '[aria-label*="profile"]',
-      '[aria-label*="menu"]',
-      '.dropdown-menu',
-      '.menu-dropdown'
+  function findMenuContainer() {
+    log("Attempting to locate TwinMind personalization menu…");
+
+    const strategies = [
+      {
+        name: "ARIA role menu",
+        fn: () => document.querySelector('[role="menu"]'),
+      },
+      {
+        name: "Data-testid profile-menu",
+        fn: () => document.querySelector('[data-testid="profile-menu"]'),
+      },
+      {
+        name: "Common class selectors",
+        fn: () =>
+          document.querySelector(
+            '.profile-menu, .user-menu, .dropdown-menu, .menu-dropdown, nav[role="navigation"] .menu'
+          ),
+      },
+      {
+        name: "Text match: Personalization",
+        fn: () => {
+          const all = Array.from(document.querySelectorAll("*"));
+          const item = all.find(
+            (n) =>
+              (n.textContent || "").trim().toLowerCase() === "personalization"
+          );
+          return item ? item.closest('[role="menu"], ul, nav, div') : null;
+        },
+      },
+      {
+        name: "Text match: Sign out",
+        fn: () => {
+          const all = Array.from(document.querySelectorAll("*"));
+          const item = all.find((n) => /sign\s*out/i.test(n.textContent || ""));
+          return item ? item.closest('[role="menu"], ul, nav, div') : null;
+        },
+      },
     ];
 
-    for (const selector of selectors) {
-      const menu = document.querySelector(selector);
-      if (menu) {
-        console.log('Found menu:', selector);
-        return menu;
+    for (const s of strategies) {
+      try {
+        const el = s.fn();
+        log(
+          `Menu detection [${s.name}]:`,
+          el ? `FOUND ${describeEl(el)}` : "not found"
+        );
+        if (el) return el;
+      } catch (e) {
+        warn(`Menu detection error in [${s.name}]`, e);
       }
     }
 
-    // Try to find any element that looks like a dropdown menu
-    const possibleMenus = document.querySelectorAll('[role="menu"], .dropdown, .menu');
-    for (const menu of possibleMenus) {
-      if (menu.children.length > 0) {
-        console.log('Found possible menu:', menu);
-        return menu;
-      }
-    }
-
-    return null;
+    // Fallback: any visible floating list that appears after click
+    const candidates = Array.from(
+      document.querySelectorAll('[role="menu"], ul, nav')
+    ).filter(
+      (el) =>
+        el.children &&
+        el.children.length >= 2 &&
+        el.getBoundingClientRect().height > 0
+    );
+    const fallback = candidates.find(Boolean) || null;
+    log(
+      "Menu detection [fallback]:",
+      fallback ? `FOUND ${describeEl(fallback)}` : "not found"
+    );
+    return fallback;
   }
 
-  // Inject demo buttons
-  async function injectDemoButtons() {
-    let menu = findAndInjectMenu();
-    
+  function cloneMenuItemPrototype(menu) {
+    // Prefer an item that contains the text "Personalization"
+    let proto = Array.from(menu.children || []).find((el) =>
+      /personalization/i.test(el.textContent || "")
+    );
+    if (!proto) {
+      // Search deeper if not a direct child
+      proto = Array.from(menu.querySelectorAll("*")).find((el) =>
+        /personalization/i.test(el.textContent || "")
+      );
+    }
+    return proto || null;
+  }
+
+  function makeCleanCloneWithText(proto, text) {
+    // Deep clone to preserve styling structure; event listeners are not cloned
+    let clone = proto.cloneNode(true);
+    // Replace existing node with a fresh clone to ensure no stray listeners
+    const fresh = clone.cloneNode(true);
+    clone.replaceWith(fresh);
+    clone = fresh;
+
+    // Attempt to replace the label text inside the clone
+    let replaced = false;
+    const walker = document.createTreeWalker(clone, NodeFilter.SHOW_TEXT, null);
+    const textNodes = [];
+    while (walker.nextNode()) textNodes.push(walker.currentNode);
+    for (const tn of textNodes) {
+      const content = (tn.nodeValue || "").trim();
+      if (!content) continue;
+      // If the prototype had a specific label like "Personalization", prefer replacing that
+      if (/personalization/i.test(content) || !replaced) {
+        tn.nodeValue = text;
+        replaced = true;
+        break;
+      }
+    }
+    if (!replaced) {
+      // Fallback: append a span with the label
+      const span = document.createElement("span");
+      span.textContent = text;
+      clone.appendChild(span);
+    }
+
+    // Accessibility: ensure it behaves like a menuitem/button
+    if (!clone.hasAttribute("role")) clone.setAttribute("role", "menuitem");
+    clone.setAttribute("tabindex", "0");
+
+    // Remove attributes that might trigger app handlers
+    clone.removeAttribute("href");
+    clone.setAttribute("data-twinmind-injected", "true");
+    return clone;
+  }
+
+  function injectMenuItems() {
+    const menu = findMenuContainer();
     if (!menu) {
-      console.log('Menu not found, will retry...');
+      log("Menu not found; will retry");
       return false;
     }
 
-    // Check if already injected
-    if (menu.querySelector('.twinmind-demo-section')) {
-      console.log('Demo buttons already injected');
+    if (menu.querySelector('[data-twinmind-injected="true"]')) {
+      log("Injected items already present; skipping");
       return true;
     }
 
-    // Inject styles
-    injectStyles();
+    const proto = cloneMenuItemPrototype(menu);
+    if (!proto) {
+      err("Cannot clone menu item - TwinMind menu structure may have changed");
+      return false;
+    }
 
-    // Check server status
-    const isServerOnline = await checkDemoServer();
-    
-    // Create demo section
-    const demoSection = createDemoSection();
-    
-    // Add server status
-    addServerStatus(demoSection, isServerOnline);
-    
-    // Insert into menu
-    menu.appendChild(demoSection);
-    
-    console.log('Demo buttons injected successfully!');
+    const connectorsItem = makeCleanCloneWithText(proto, "🔗 Connectors");
+    const dictionaryItem = makeCleanCloneWithText(proto, "📝 Dictionary");
+
+    const onActivate = (file) => (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      showOverlay(file);
+    };
+    connectorsItem.addEventListener("click", onActivate("connectors.html"));
+    dictionaryItem.addEventListener("click", onActivate("dictionary.html"));
+    const onKey = (file) => (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        e.stopPropagation();
+        showOverlay(file);
+      }
+    };
+    connectorsItem.addEventListener("keydown", onKey("connectors.html"));
+    dictionaryItem.addEventListener("keydown", onKey("dictionary.html"));
+
+    // Append at the end of the menu for visibility
+    menu.appendChild(connectorsItem);
+    menu.appendChild(dictionaryItem);
+
+    log("Injected TwinMind items into menu:", describeEl(menu));
     return true;
   }
 
-  // Main injection logic with retries
+  // --- Orchestration with retries and observation ---
   async function main() {
+    // Print a short inspection guide once
+    log("Menu injection started. If items do not appear:");
+    log("1) Click your profile picture (top-left).");
+    log("2) When menu opens, right-click Personalization → Inspect.");
+    log(
+      "3) In Elements, find the container wrapping all menu items (div/ul/nav)."
+    );
+    log(
+      "4) Note its role/id/classes; the extension tries multiple selectors and logs which matched."
+    );
     let retries = 0;
-    
-    const tryInject = async () => {
-      const success = await injectDemoButtons();
-      
+
+    const tryInject = () => {
+      const success = injectMenuItems();
       if (!success && retries < MAX_RETRIES) {
-        retries++;
-        console.log(`Retrying injection (${retries}/${MAX_RETRIES})...`);
+        retries += 1;
+        log(`Retrying menu injection (${retries}/${MAX_RETRIES})…`);
         setTimeout(tryInject, RETRY_DELAY);
       }
     };
 
-    // Initial injection attempt
-    setTimeout(tryInject, 1000);
+    // Kick off initial attempt a bit after load to let app render
+    setTimeout(tryInject, 800);
 
-    // Also try when user interacts (clicks profile button etc.)
-    document.addEventListener('click', async (e) => {
-      // Look for profile clicks
-      if (e.target.closest('[data-testid="profile"], .profile, [aria-label*="profile"], .user-avatar')) {
-        setTimeout(tryInject, 500);
-      }
-    }, true);
+    // Re-try when user opens profile area
+    document.addEventListener(
+      "click",
+      (e) => {
+        const t = e.target;
+        if (
+          t &&
+          t.closest(
+            '[data-testid="profile"], .profile, [aria-label*="profile" i], .user-avatar, button, [role="button"]'
+          )
+        ) {
+          setTimeout(tryInject, 500);
+        }
+      },
+      true
+    );
 
-    // Watch for DOM changes
+    // Watch for DOM mutations that might add the menu
     const observer = new MutationObserver(() => {
-      setTimeout(tryInject, 500);
+      setTimeout(tryInject, 300);
     });
-    
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
+    observer.observe(document.body, { childList: true, subtree: true });
   }
 
-  // Start when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', main);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", main);
   } else {
     main();
   }
-
 })();
