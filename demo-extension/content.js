@@ -288,11 +288,12 @@
         /document\.addEventListener\(\s*["']DOMContentLoaded["']\s*,\s*\(\)\s*=>\s*\{([\s\S]*)\}\s*\)\s*;?/
       );
       if (dclMatch && dclMatch[1]) {
+        // Run the body immediately since DOM is already ready
         toRun = `(function(){${dclMatch[1]}})();`;
       }
       const runner = document.createElement("script");
       runner.textContent = toRun;
-      contentWrap.appendChild(runner);
+      inner.appendChild(runner); // Append to inner content, not contentWrap, so script runs in right context
     });
 
     log("Overlay shown for", htmlFileName);
@@ -333,8 +334,9 @@
             const hasSmallWidth = rect.width < 200; // dropdown is typically narrow
             const classes = container.className || "";
             const isModal =
-              (classes.includes("fixed") && classes.includes("inset")); 
-            if (hasSmallWidth && !isModal && classes.includes("absolute")) return container;
+              classes.includes("fixed") && classes.includes("inset");
+            if (hasSmallWidth && !isModal && classes.includes("absolute"))
+              return container;
             container = container.parentElement;
           }
           return null;
