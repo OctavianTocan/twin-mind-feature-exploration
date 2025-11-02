@@ -14,7 +14,12 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["connectors.html", "dictionary.html", "icons/*"],
+      "resources": [
+        "connectors.html",
+        "dictionary.html",
+        "icons/*",
+        "styles/site.css"
+      ],
       "matches": ["https://app.twinmind.com/*"]
     }
   ],

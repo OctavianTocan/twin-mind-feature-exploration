@@ -52,8 +52,11 @@
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlText, "text/html");
 
-    // Extract styles and scripts from the fetched HTML
+    // Extract stylesheets, styles and scripts from the fetched HTML
     const styleTags = Array.from(doc.querySelectorAll("style"));
+    const linkStyleTags = Array.from(
+      doc.querySelectorAll('link[rel="stylesheet"][href]')
+    );
     const scriptTags = Array.from(doc.querySelectorAll("script"));
     const bodyEl = doc.body;
 
@@ -61,6 +64,10 @@
     try {
       doc
         .querySelectorAll('iframe[src*="app.twinmind.com"]')
+        .forEach((el) => el.remove());
+      // Also remove our demo page helpers by class if present
+      doc
+        .querySelectorAll(".tm-preview-iframe, .bg-dimmed-overlay")
         .forEach((el) => el.remove());
       Array.from(doc.querySelectorAll("div")).forEach((el) => {
         const s = (el.getAttribute("style") || "")
@@ -94,6 +101,28 @@
       tw.defer = true;
       document.head.appendChild(tw);
       log("Injected Tailwind CDN");
+    }
+
+    // Always include the shared stylesheet from the extension for consistency
+    try {
+      const sharedHref = chrome.runtime.getURL("styles/site.css");
+      const existing = Array.from(
+        document.querySelectorAll('link[rel="stylesheet"]')
+      ).some((l) => (l.getAttribute("href") || "").includes("styles/site.css"));
+      if (!existing) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = sharedHref;
+        document.head.appendChild(link);
+        log("Injected shared stylesheet:", sharedHref);
+        cleanupFns.push(() => {
+          try {
+            link.remove();
+          } catch (_) {}
+        });
+      }
+    } catch (e) {
+      warn("Failed to inject shared stylesheet", e);
     }
 
     // Create overlay elements
@@ -135,6 +164,25 @@
       styleEl.textContent = s.textContent || "";
       contentWrap.appendChild(styleEl);
     });
+
+    // Inline any external link stylesheets referenced by the fetched HTML
+    for (const l of linkStyleTags) {
+      const href = l.getAttribute("href") || "";
+      try {
+        // Resolve to extension URL if relative
+        const resolved = href.startsWith("http")
+          ? href
+          : chrome.runtime.getURL(href.replace(/^\/?/, ""));
+        const cssRes = await fetch(resolved, { cache: "no-cache" });
+        const cssText = await cssRes.text();
+        const inline = document.createElement("style");
+        inline.textContent = cssText;
+        contentWrap.appendChild(inline);
+        log("Inlined stylesheet from", href);
+      } catch (e) {
+        warn("Failed to inline stylesheet", href, e);
+      }
+    }
 
     // Insert body markup
     const inner = document.createElement("div");
