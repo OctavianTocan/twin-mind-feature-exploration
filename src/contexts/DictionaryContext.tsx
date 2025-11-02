@@ -55,7 +55,11 @@ const initialDictionaryItems: DictionaryItem[] = [
   },
 ];
 
-export const DictionaryProvider: React.FC = ({ children }) => {
+interface DictionaryProviderProps {
+  children: React.ReactNode;
+}
+
+export const DictionaryProvider: React.FC<DictionaryProviderProps> = ({ children }) => {
   const [dictionaryItems, setDictionaryItems] = useState<DictionaryItem[]>(
     initialDictionaryItems
   );

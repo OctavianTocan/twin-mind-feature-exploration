@@ -6,6 +6,10 @@ import { useConnectors } from '../contexts/ConnectorsContext';
 export const ConnectorsPage: React.FC = () => {
   const { connectors, toggleConnector } = useConnectors();
 
+  const handleCardClick = (connectorId: string) => {
+    console.log(`Navigate to details for connector: ${connectorId}`);
+  };
+
   return (
     <div className="w-full max-w-md md:max-w-lg bg-white p-5 flex flex-col rounded-lg shadow-lg panel-elevated relative z-10">
       <Header
@@ -23,6 +27,7 @@ export const ConnectorsPage: React.FC = () => {
               key={connector.id}
               connector={connector}
               onToggle={toggleConnector}
+              onClick={() => handleCardClick(connector.id)}
             />
           ))}
         </div>
