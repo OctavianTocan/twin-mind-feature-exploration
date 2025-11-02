@@ -18,25 +18,6 @@
       font-weight: 600;
     }
     
-    .status {
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 12px;
-      font-size: 13px;
-    }
-    
-    .status.online {
-      background: #d1fae5;
-      color: #065f46;
-      border: 1px solid #6ee7b7;
-    }
-    
-    .status.offline {
-      background: #fef3c7;
-      color: #92400e;
-      border: 1px solid #fcd34d;
-    }
-    
     .instructions {
       font-size: 12px;
       color: #6b7280;
@@ -57,60 +38,22 @@
     .instructions li {
       margin-bottom: 4px;
     }
-    
-    .demo-btn {
-      width: 100%;
-      padding: 10px;
-      margin: 4px 0;
-      background: #0b4f75;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 500;
-      transition: background 0.2s;
-    }
-    
-    .demo-btn:hover {
-      background: #0a4268;
-    }
-    
-    .demo-btn:disabled {
-      background: #9ca3af;
-      cursor: not-allowed;
-    }
   </style>
 </head>
 <body>
   <h2>🚀 TwinMind Demo Extension</h2>
   
-  <div id="status" class="status">
-    Checking demo server...
-  </div>
-  
-  <button id="connectorsBtn" class="demo-btn" disabled>
-    🔗 Open Connectors Demo
-  </button>
-  
-  <button id="dictionaryBtn" class="demo-btn" disabled>
-    📝 Open Dictionary Demo
-  </button>
-  
   <div class="instructions">
-    <h3>📋 Quick Start:</h3>
+    <h3>📋 How to use:</h3>
     <ol>
-      <li>Start the demo server first</li>
       <li>Navigate to <strong>app.twinmind.com</strong></li>
       <li>Click your profile to see demo buttons</li>
+      <li>Click "🔗 Connectors" or "📝 Dictionary"</li>
     </ol>
     
-    <h3>🛠 Demo Server:</h3>
-    <ol>
-      <li>Open the <code>demo-server</code> folder</li>
-      <li>Run: <code>npm install</code></li>
-      <li>Run: <code>npm start</code></li>
-    </ol>
+    <p style="margin-top: 12px; font-size: 12px; color: #6b7280;">
+      The extension injects menu items into TwinMind's profile menu and shows full-page overlays.
+    </p>
   </div>
   
   <script src="popup.js"></script>
