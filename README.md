@@ -1,8 +1,8 @@
-# 🚀 TwinMind Overlay Injection
+# TwinMind Overlay Injection
 
 The browser extension injects two menu items into TwinMind’s left-side personalization dropdown and shows full-page overlays for Connectors and Dictionary directly over app.twinmind.com. No local server required.
 
-## 📋 Quick Start
+## Quick Start
 
 ### Install the Chrome extension
 
@@ -15,25 +15,25 @@ The browser extension injects two menu items into TwinMind’s left-side persona
 
 1. Navigate to `https://app.twinmind.com` and log in
 2. Click your profile (top-left) to open the menu
-3. New items "🔗 Connectors" and "📝 Dictionary" should appear at the bottom
+3. New items "Connectors" and "Dictionary" should appear at the bottom
 4. Click either to open a full-page overlay with a dark backdrop
 5. Close with Back/Save in the header, by clicking the backdrop, or pressing ESC
 
-## 🎯 Overlay Features
+## Overlay Features
 
-### 🔗 Connectors
+### Connectors
 
 - TwinMind-styled connector cards for Google Drive, OneDrive, Outlook, Gmail, Google Calendar
 - Toggles with keyboard support and smooth animations
 - Mobile-first layout centered within a raised panel
 
-### 📝 Dictionary
+### Dictionary
 
 - Add/edit/delete entries; supports words and spelling corrections
 - Desktop modal + mobile inline form
 - Keyboard-accessible toggles and controls
 
-## 🛠 Technical Details
+## Technical Details
 
 ### Extension Behavior
 
@@ -44,26 +44,38 @@ The browser extension injects two menu items into TwinMind’s left-side persona
 - Loads `connectors.html` and `dictionary.html` from the extension package via `chrome.runtime.getURL`
 - Rewrites icon URLs to the extension’s `icons/` path and injects Tailwind CDN when missing
 
-## 📁 File Structure
+## File Structure
 
 ```
-TwinMind-Improvements-Project/
-├── connectors.html              # Connectors demo page
-├── dictionary.html              # Dictionary demo page
-├── icons/                      # Service icons
+twin-mind-feature-exploration/
 ├── demo-extension/              # Chrome extension
 │   ├── manifest.json           # Extension config
 │   ├── content.js             # Main injection script
 │   ├── styles.css             # Extension styles
+│   ├── connectors.html         # Connectors overlay (loaded by extension)
+│   ├── dictionary.html         # Dictionary overlay (loaded by extension)
+│   ├── icons/                  # Extension icons
+│   ├── styles/                 # Extension CSS
+│   │   └── site.css           # Shared styles
 │   ├── popup.html             # Extension popup
 │   └── popup.js              # Popup logic
-├── bookmarklet/               # Previous bookmarklet (optional)
+├── docs/                       # GitHub Pages demo
+│   ├── connectors.html         # Standalone connectors page
+│   ├── dictionary.html         # Standalone dictionary page
+│   ├── icons/                  # Service icons (Gmail, Drive, etc.)
+│   ├── styles/                 # Shared CSS
+│   │   └── site.css           # Design tokens and utilities
+│   └── transcript.html         # Demo transcript page
+├── bookmarklet/               # Previous bookmarklet implementation
 │   ├── demo-bookmarklet.js    # Bookmarklet source
 │   └── bookmarklet-url.txt    # Minified bookmarklet URL
-└── README.md                 # This file
+├── reference-screenshots/      # Design reference images
+├── .github/
+│   └── copilot-instructions.md # AI agent instructions
+└── README.md                  # This file
 ```
 
-## 🎨 Design System
+## Design System
 
 ### Colors
 
@@ -86,7 +98,7 @@ TwinMind-Improvements-Project/
 - **Active:** Reduced transform for tactile feedback
 - **Transitions:** 0.2s ease for smooth animations
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### Menu items not appearing
 
@@ -106,6 +118,22 @@ TwinMind-Improvements-Project/
 - Ensure the extension is loaded with the `icons/` folder present
 - Reload the extension and page
 
-## 🚀 Ready for Demo!
+## Additional Information
 
-Load the extension, open TwinMind, and use the injected menu items to launch immersive overlays that mirror the production UI—no local server needed. Good luck! 🎉
+### GitHub Pages Demo
+
+The `docs/` directory contains standalone HTML pages that can be viewed directly via GitHub Pages or a local web server. These pages include the TwinMind iframe background for visual context during development.
+
+### Extension vs. Standalone Pages
+
+- **Extension**: Loads HTML from `demo-extension/` and injects it as an overlay into the live TwinMind app
+- **Standalone**: Pages in `docs/` can be opened directly for development and preview
+- Both share the same CSS design tokens in their respective `styles/site.css` files
+
+### Development Workflow
+
+1. **Preview standalone pages**: Open files in `docs/` directly or use a local server
+2. **Test extension**: Load `demo-extension/` as an unpacked extension in Chrome
+3. **Sync changes**: Keep both `demo-extension/` and `docs/` versions in sync when making UI changes
+
+Load the extension, open TwinMind, and use the injected menu items to launch immersive overlays that mirror the production UI—no local server needed.
