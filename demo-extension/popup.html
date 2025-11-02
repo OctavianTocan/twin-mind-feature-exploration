@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 300px;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      background: #ffffff;
+    }
+    
+    h2 {
+      margin: 0 0 16px 0;
+      font-size: 16px;
+      color: #0b4f75;
+      font-weight: 600;
+    }
+    
+    .status {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      font-size: 13px;
+    }
+    
+    .status.online {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #6ee7b7;
+    }
+    
+    .status.offline {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fcd34d;
+    }
+    
+    .instructions {
+      font-size: 12px;
+      color: #6b7280;
+      line-height: 1.4;
+    }
+    
+    .instructions h3 {
+      margin: 12px 0 4px 0;
+      font-size: 13px;
+      color: #374151;
+    }
+    
+    .instructions ol {
+      margin: 8px 0;
+      padding-left: 16px;
+    }
+    
+    .instructions li {
+      margin-bottom: 4px;
+    }
+    
+    .demo-btn {
+      width: 100%;
+      padding: 10px;
+      margin: 4px 0;
+      background: #0b4f75;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      transition: background 0.2s;
+    }
+    
+    .demo-btn:hover {
+      background: #0a4268;
+    }
+    
+    .demo-btn:disabled {
+      background: #9ca3af;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <h2>🚀 TwinMind Demo Extension</h2>
+  
+  <div id="status" class="status">
+    Checking demo server...
+  </div>
+  
+  <button id="connectorsBtn" class="demo-btn" disabled>
+    🔗 Open Connectors Demo
+  </button>
+  
+  <button id="dictionaryBtn" class="demo-btn" disabled>
+    📝 Open Dictionary Demo
+  </button>
+  
+  <div class="instructions">
+    <h3>📋 Quick Start:</h3>
+    <ol>
+      <li>Start the demo server first</li>
+      <li>Navigate to <strong>app.twinmind.com</strong></li>
+      <li>Click your profile to see demo buttons</li>
+    </ol>
+    
+    <h3>🛠 Demo Server:</h3>
+    <ol>
+      <li>Open the <code>demo-server</code> folder</li>
+      <li>Run: <code>npm install</code></li>
+      <li>Run: <code>npm start</code></li>
+    </ol>
+  </div>
+  
+  <script src="popup.js"></script>
+</body>
+</html>

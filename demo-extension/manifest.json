@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "TwinMind Demo Buttons",
+  "version": "1.0",
+  "description": "Add demo buttons to TwinMind for showcasing Connectors and Dictionary features",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "tabs"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://app.twinmind.com/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "TwinMind Demo"
+  }
+}
