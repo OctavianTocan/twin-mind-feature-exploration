@@ -4,24 +4,25 @@ Purpose: Make agents productive in this repo by capturing the real patterns used
 
 ## What this repo is
 
-- Static HTML pages using Tailwind via CDN and a shared stylesheet (`styles/site.css`); small inline JS per page. No bundlers/frameworks/build step.
-- Key files: `connectors.html` (connectors list), `dictionary.html` (dictionary CRUD).
+- Static HTML pages using Tailwind via CDN and a shared stylesheet (`docs/styles/site.css` and `demo-extension/styles/site.css`); small inline JS per page. No bundlers/frameworks/build step.
+- Key files: `docs/connectors.html` and `demo-extension/connectors.html` (connectors list), `docs/dictionary.html` and `demo-extension/dictionary.html` (dictionary CRUD).
 - Extension: `demo-extension/` injects “Connectors” and “Dictionary” overlays into https://app.twinmind.com via `content.js`.
-- Assets: `icons/` (PNG via <img>), shared CSS `styles/site.css` (root) and `demo-extension/styles/site.css` (extension mirror), `reference-screenshots/` (design refs; not shipped).
+- Assets: `docs/icons/` and `demo-extension/icons/` (PNG via <img>), shared CSS `docs/styles/site.css` and `demo-extension/styles/site.css`, `reference-screenshots/` (design refs; not shipped).
+- GitHub Pages: `docs/` directory serves standalone demo pages via GitHub Pages.
 
 ## Architecture & conventions
 
-- Pages link shared CSS (`styles/site.css`) and Tailwind CDN; keep page-scoped `<style>` minimal and JS small/local.
+- Pages link shared CSS (`docs/styles/site.css` or `demo-extension/styles/site.css`) and Tailwind CDN; keep page-scoped `<style>` minimal and JS small/local.
 - Mobile-first centered card: `w-full max-w-md md:max-w-lg bg-white p-5 rounded-lg`.
 - Tokens: blue `#0B4F75` in `.btn-primary`, `.text-blue-primary`, toggle tracks; font Inter. Body text is `#646464`; titles use "Helvetica Neue".
 - A11y: preserve `role`, `aria-checked`, `tabindex`; add Enter/Space key handlers. State is in-memory only.
-- Background: TwinMind iframe (`pointer-events: none; z-index: 0`) with dark overlay (`rgba(0,0,0,0.35); z-index: 5`); main panel has `.panel-elevated` with strong shadow and `z-index: 10`. Standalone pages keep these helpers; the extension strips them inside overlays.
+- Background: TwinMind iframe (`pointer-events: none; z-index: 0`) with dark overlay (`rgba(0,0,0,0.35); z-index: 5`); main panel has `.panel-elevated` with strong shadow and `z-index: 10`. Standalone pages in `docs/` keep these helpers; the extension strips them inside overlays.
 
 - Extension overlay system
-  - `demo-extension/content.js` injects menu items and shows a full-page overlay by loading extension-packaged `connectors.html`/`dictionary.html`.
-  - Loader behavior: removes background helpers (`.tm-preview-iframe`, `.bg-dimmed-overlay`) from fetched HTML; rewrites `icons/...` to `chrome-extension://...`; injects Tailwind if missing; injects shared CSS (`styles/site.css`) into the host page head (and cleans up on close); inlines any `<link rel="stylesheet">` from the fetched HTML into the overlay; executes inline scripts (unwraps DOMContentLoaded handlers); close via ESC/backdrop/Back/Save.
+  - `demo-extension/content.js` injects menu items and shows a full-page overlay by loading extension-packaged `connectors.html`/`dictionary.html` from `demo-extension/`.
+  - Loader behavior: removes background helpers (`.tm-preview-iframe`, `.bg-dimmed-overlay`) from fetched HTML; rewrites `icons/...` to `chrome-extension://...`; injects Tailwind if missing; injects shared CSS (`demo-extension/styles/site.css`) into the host page head (and cleans up on close); inlines any `<link rel="stylesheet">` from the fetched HTML into the overlay; executes inline scripts (unwraps DOMContentLoaded handlers); close via ESC/backdrop/Back/Save.
   - `demo-extension/manifest.json` `web_accessible_resources`: `connectors.html`, `dictionary.html`, `icons/*`, `styles/site.css`.
-  - Keep `styles/site.css` mirrored in `demo-extension/styles/site.css` when adding tokens/utilities.
+  - Keep `docs/styles/site.css` and `demo-extension/styles/site.css` in sync when adding tokens/utilities.
 
 ## Interaction patterns
 
@@ -43,7 +44,7 @@ Purpose: Make agents productive in this repo by capturing the real patterns used
 ## UI tokens & assets
 
 - Header: Back (inline SVG), centered title (1.75rem, bold, Helvetica Neue, #4F4F4F), right-aligned Save.
-- Icons: `<img src="icons/<name>.png" alt="…" loading="lazy" class="w-6 h-6 object-contain">` for connectors (smaller than dictionary examples). The extension rewrites these paths to chrome-extension URLs inside overlays.
+- Icons: `<img src="icons/<name>.png" alt="…" loading="lazy" class="w-6 h-6 object-contain">` for connectors (smaller than dictionary examples). Icons are in `docs/icons/` for standalone pages and `demo-extension/icons/` for the extension. The extension rewrites these paths to chrome-extension URLs inside overlays.
 - Buttons:
   - `.btn-primary`: `#0B4F75` background, white text, rounded-lg, hover darker.
   - `.btn-elevated`: Cards only; rounded-xl with inset highlight and layered shadows (not for buttons).
@@ -51,30 +52,30 @@ Purpose: Make agents productive in this repo by capturing the real patterns used
   - `.btn-lg`: Larger CTA (desktop "Add new"); `padding: 0.875rem`, `font-size: 1rem`, no bold.
   - `.panel-elevated`: Strong shadow for main panel over dimmed background; `box-shadow: 0 12px 40px rgba(0,0,0,0.28), 0 2px 10px rgba(0,0,0,0.15)`.
 - Prefer Tailwind utilities; minimal page-specific CSS in `<style>`.
-- Shared classes from `styles/site.css`: `.btn-primary`, `.btn-surface`, `.btn-lg`, `.btn-elevated`, `.panel-elevated`, `.text-blue-primary`, `.font-helvetica`, `.toggle-switch-container`, `.toggle-track`, `.toggle-ball`, `.bg-dimmed-overlay`, `.tm-preview-iframe`.
+- Shared classes from `docs/styles/site.css` and `demo-extension/styles/site.css`: `.btn-primary`, `.btn-surface`, `.btn-lg`, `.btn-elevated`, `.panel-elevated`, `.text-blue-primary`, `.font-helvetica`, `.toggle-switch-container`, `.toggle-track`, `.toggle-ball`, `.bg-dimmed-overlay`, `.tm-preview-iframe`.
 
 ## Workflows
 
-- Preview (standalone pages): open `connectors.html` or `dictionary.html` directly, or use VS Code "Live Server".
-- Extension flow: load `demo-extension/` as an unpacked extension, open https://app.twinmind.com, open profile menu, click “🔗 Connectors” / “📝 Dictionary”. Close overlays with Back/Save, ESC, or backdrop.
+- Preview (standalone pages): open `docs/connectors.html` or `docs/dictionary.html` directly, or use VS Code "Live Server".
+- Extension flow: load `demo-extension/` as an unpacked extension, open https://app.twinmind.com, open profile menu, click “Connectors” / “Dictionary”. Close overlays with Back/Save, ESC, or backdrop.
 - Debug: Use DevTools. Extension logs are prefixed `[TwinMind Ext]` (menu detection, stylesheet injection, overlay lifecycle). GitHub Pages-ready; no env vars.
 - Expected console warnings: TwinMind iframe shows auth errors (401/405/Firebase); Tailwind CDN production warning. Both are non-blocking.
 - No local demo server required for overlays; `demo-server/` is not part of the current flow.
 
 ## Extending examples
 
-- New connector: duplicate `.connector-card`, set `data-connector`, icon/text, wire inner toggle listeners. Use two-row grid layout for left content. Apply changes in both `connectors.html` (root) and `demo-extension/connectors.html` (extension). Ensure `icons/<name>.png` exists.
+- New connector: duplicate `.connector-card`, set `data-connector`, icon/text, wire inner toggle listeners. Use two-row grid layout for left content. Apply changes in both `docs/connectors.html` and `demo-extension/connectors.html`. Ensure `icons/<name>.png` exists in both `docs/icons/` and `demo-extension/icons/`.
 - New toggle: reuse structure/listeners; for dictionary, adjust `updateFormInputs` if behavior differs. Ensure `translateX(1.25rem)` for checked state.
-- New dictionary UI: reuse `updateFormInputs` and toggle structure; implement in both `dictionary.html` files (root and extension).
-- New styles/tokens: add to `styles/site.css` and mirror in `demo-extension/styles/site.css`.
+- New dictionary UI: reuse `updateFormInputs` and toggle structure; implement in both `docs/dictionary.html` and `demo-extension/dictionary.html`.
+- New styles/tokens: add to `docs/styles/site.css` and mirror in `demo-extension/styles/site.css`.
 - New button: For secondary actions use `.btn-surface`; for primary blue actions use inline styles with blue background + subtle border + backdrop blur.
-- New assets used in overlays: add under `icons/`; if adding new resource types, include them in `web_accessible_resources` in `demo-extension/manifest.json`.
+- New assets used in overlays: add under `docs/icons/` and `demo-extension/icons/`; if adding new resource types, include them in `web_accessible_resources` in `demo-extension/manifest.json`.
 
 ## Do / Don't
 
 - Do keep ARIA + keyboard; keep scripts page-local; use `crypto.randomUUID()`; `unshift` for new items; maintain toggle containment (1.25rem transform).
-- Do link `styles/site.css` in pages and keep page-scoped CSS minimal; keep `demo-extension/styles/site.css` in sync.
-- Do reference icons as `icons/...` in HTML; the extension will rewrite paths for overlays.
+- Do link `docs/styles/site.css` or `demo-extension/styles/site.css` in pages and keep page-scoped CSS minimal; keep both versions in sync.
+- Do reference icons as `icons/...` in HTML; ensure they exist in both `docs/icons/` and `demo-extension/icons/` when used in overlays.
 - Do apply Copilot-like translucent surface to secondary buttons; preserve blue color for primary CTAs with inline styles.
 - Don't add frameworks/build steps or split CSS/JS unless the project is reorganized.
 - Don't apply `.btn-elevated` to buttons in dictionary (only to connector cards); use `.btn-surface` or inline styles instead.
