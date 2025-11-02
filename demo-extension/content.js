@@ -12,6 +12,7 @@
 
   // --- Overlay helpers ---
   let cleanupFns = [];
+  let lastVisibleMenu = null;
 
   function removeOverlay() {
     const overlay = document.querySelector(".twinmind-overlay");
@@ -31,6 +32,15 @@
     try {
       document.body.style.overflow = "";
     } catch (_) {}
+
+    // Restore menu visibility if it was hidden
+    if (lastVisibleMenu) {
+      try {
+        lastVisibleMenu.style.display = "";
+      } catch (_) {}
+      lastVisibleMenu = null;
+    }
+
     log("Overlay removed");
   }
 
@@ -125,6 +135,13 @@
       warn("Failed to inject shared stylesheet", e);
     }
 
+    // Hide the personalization menu dropdown while overlay is open
+    const menu = findMenuContainer();
+    if (menu && menu.style.display !== "none") {
+      lastVisibleMenu = menu;
+      menu.style.display = "none";
+    }
+
     // Create overlay elements
     const overlay = document.createElement("div");
     overlay.className = "twinmind-overlay";
@@ -135,6 +152,7 @@
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
+      paddingTop: "0",
     });
 
     const backdrop = document.createElement("div");
@@ -151,10 +169,10 @@
       position: "relative",
       zIndex: "10001",
       width: "100%",
-      height: "100%",
+      maxHeight: "100vh",
       overflow: "auto",
       display: "flex",
-      alignItems: "flex-start",
+      alignItems: "center",
       justifyContent: "center",
     });
 
@@ -300,21 +318,6 @@
 
     const strategies = [
       {
-        name: "ARIA role menu",
-        fn: () => document.querySelector('[role="menu"]'),
-      },
-      {
-        name: "Data-testid profile-menu",
-        fn: () => document.querySelector('[data-testid="profile-menu"]'),
-      },
-      {
-        name: "Common class selectors",
-        fn: () =>
-          document.querySelector(
-            '.profile-menu, .user-menu, .dropdown-menu, .menu-dropdown, nav[role="navigation"] .menu'
-          ),
-      },
-      {
         name: "Text match: Personalization",
         fn: () => {
           const all = Array.from(document.querySelectorAll("*"));
@@ -322,15 +325,19 @@
             (n) =>
               (n.textContent || "").trim().toLowerCase() === "personalization"
           );
-          return item ? item.closest('[role="menu"], ul, nav, div') : null;
-        },
-      },
-      {
-        name: "Text match: Sign out",
-        fn: () => {
-          const all = Array.from(document.querySelectorAll("*"));
-          const item = all.find((n) => /sign\s*out/i.test(n.textContent || ""));
-          return item ? item.closest('[role="menu"], ul, nav, div') : null;
+          if (!item) return null;
+          // Find the dropdown/menu container, not the modal
+          let container = item.parentElement;
+          while (container) {
+            const rect = container.getBoundingClientRect();
+            const hasSmallWidth = rect.width < 200; // dropdown is typically narrow
+            const classes = container.className || "";
+            const isModal =
+              (classes.includes("fixed") && classes.includes("inset")); 
+            if (hasSmallWidth && !isModal && classes.includes("absolute")) return container;
+            container = container.parentElement;
+          }
+          return null;
         },
       },
     ];
@@ -348,14 +355,15 @@
       }
     }
 
-    // Fallback: any visible floating list that appears after click
+    // Fallback: any visible floating dropdown (not fullscreen modal)
     const candidates = Array.from(
       document.querySelectorAll('[role="menu"], ul, nav')
     ).filter(
       (el) =>
         el.children &&
         el.children.length >= 2 &&
-        el.getBoundingClientRect().height > 0
+        el.getBoundingClientRect().height > 0 &&
+        el.getBoundingClientRect().width < 500 // Dropdown is narrow
     );
     const fallback = candidates.find(Boolean) || null;
     log(
@@ -437,8 +445,8 @@
       return false;
     }
 
-    const connectorsItem = makeCleanCloneWithText(proto, "🔗 Connectors");
-    const dictionaryItem = makeCleanCloneWithText(proto, "📝 Dictionary");
+    const connectorsItem = makeCleanCloneWithText(proto, "Connectors");
+    const dictionaryItem = makeCleanCloneWithText(proto, "Dictionary");
 
     const onActivate = (file) => (e) => {
       e.preventDefault();
